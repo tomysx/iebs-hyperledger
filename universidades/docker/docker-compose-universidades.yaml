@@ -67,7 +67,7 @@ services:
 
   peer0.madrid.universidades.com:
     container_name: peer0.madrid.universidades.com
-    image: hyperledger/fabric-peer:latest
+    image: hyperledger/fabric-peer:2.3.3
     labels:
       service: hyperledger-fabric
     environment:
@@ -122,7 +122,7 @@ services:
 
   peer0.bogota.universidades.com:
     container_name: peer0.bogota.universidades.com
-    image: hyperledger/fabric-peer:latest
+    image: hyperledger/fabric-peer:2.3.3
     labels:
       service: hyperledger-fabric
     environment:
