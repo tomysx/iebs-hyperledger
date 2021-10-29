@@ -376,3 +376,16 @@ Profiles:
                 - *Org2
                 - *Org3
             Capabilities: *ApplicationCapabilities
+
+    TestGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities: *OrdererCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+            Capabilities: *ApplicationCapabilities
