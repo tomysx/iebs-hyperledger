@@ -1,0 +1,199 @@
+---
+################################################################################
+#   Section: Organizations
+################################################################################
+Organizations:
+
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: ../organizations/ordererOrganizations/autos.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+
+        OrdererEndpoints:
+            - orderer.autos.com:7050
+            - orderer2.autos.com:6050
+            - orderer3.autos.com:5050
+
+    - &Fabricante
+        Name: FabricanteMSP
+        ID: FabricanteMSP
+
+        MSPDir: ../organizations/peerOrganizations/fabricante.autos.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('FabricanteMSP.admin', 'FabricanteMSP.peer', 'FabricanteMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('FabricanteMSP.admin', 'FabricanteMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('FabricanteMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('FabricanteMSP.peer')"
+
+    - &Transportista
+        Name: TransportistaMSP
+        ID: TransportistaMSP
+
+        MSPDir: ../organizations/peerOrganizations/transportista.autos.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('TransportistaMSP.admin', 'TransportistaMSP.peer', 'TransportistaMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('TransportistaMSP.admin', 'TransportistaMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('TransportistaMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('TransportistaMSP.peer')"
+
+    - &Concesionario
+        Name: ConcesionarioMSP
+        ID: ConcesionarioMSP
+
+        MSPDir: ../organizations/peerOrganizations/concesionario.autos.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ConcesionarioMSP.admin', 'ConcesionarioMSP.peer', 'ConcesionarioMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ConcesionarioMSP.admin', 'ConcesionarioMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ConcesionarioMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('ConcesionarioMSP.peer')"
+
+################################################################################
+#   SECTION: Capabilities
+################################################################################
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+################################################################################
+#   SECTION: Application
+################################################################################
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+################################################################################
+#   SECTION: Orderer
+################################################################################
+Orderer: &OrdererDefaults
+    OrdererType: etcdraft
+    Addresses:
+        - orderer.autos.com:7050
+        - orderer2.autos.com:6050
+        - orderer3.autos.com:5050
+
+    EtcdRaft:
+        Consenters:
+        - Host: orderer.autos.com
+          Port: 7050
+          ClientTLSCert: ../organizations/ordererOrganizations/autos.com/orderers/orderer.autos.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/autos.com/orderers/orderer.autos.com/tls/server.crt
+        - Host: orderer2.autos.com
+          Port: 6050
+          ClientTLSCert: ../organizations/ordererOrganizations/autos.com/orderers/orderer2.autos.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/autos.com/orderers/orderer2.autos.com/tls/server.crt
+        - Host: orderer3.autos.com
+          Port: 5050
+          ClientTLSCert: ../organizations/ordererOrganizations/autos.com/orderers/orderer3.autos.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/autos.com/orderers/orderer3.autos.com/tls/server.crt
+          
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+################################################################################
+#   CHANNEL
+################################################################################
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+    Capabilities:
+        <<: *ChannelCapabilities
+
+################################################################################
+#   Profile
+################################################################################
+Profiles:
+
+    autosGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities: *OrdererCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Fabricante
+                - *Transportista
+                - *Concesionario
+            Capabilities: *ApplicationCapabilities
