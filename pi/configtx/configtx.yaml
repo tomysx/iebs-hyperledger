@@ -25,7 +25,7 @@ Organizations:
         ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: ../organizations/ordererOrganizations/certificacion.com/msp
+        MSPDir: ../organizations/ordererOrganizations/pi.com/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -42,7 +42,9 @@ Organizations:
                 Rule: "OR('OrdererMSP.admin')"
 
         OrdererEndpoints:
-            - orderer.certificacion.com:7050
+            - orderer.pi.com:7050
+            - orderer2.pi.com:6050
+            - orderer3.pi.com:5050
 
     - &Empresa
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -52,7 +54,7 @@ Organizations:
         # ID to load the MSP definition as
         ID: EmpresaMSP
 
-        MSPDir: ../organizations/peerOrganizations/empresa.certificacion.com/msp
+        MSPDir: ../organizations/peerOrganizations/empresa.pi.com/msp
 
         # Policies defines the set of policies at this level of the config tree
         # For organization policies, their canonical path is usually
@@ -181,14 +183,24 @@ Orderer: &OrdererDefaults
     # as TLS validation.  The preferred way to specify orderer addresses is now
     # to include the OrdererEndpoints item in your org definition
     Addresses:
-        - orderer.certificacion.com:7050
+        - orderer.pi.com:7050
+        - orderer2.pi.com:6050
+        - orderer3.pi.com:5050
 
     EtcdRaft:
         Consenters:
-        - Host: orderer.certificacion.com
+        - Host: orderer.pi.com
           Port: 7050
-          ClientTLSCert: ../organizations/ordererOrganizations/certificacion.com/orderers/orderer.certificacion.com/tls/server.crt
-          ServerTLSCert: ../organizations/ordererOrganizations/certificacion.com/orderers/orderer.certificacion.com/tls/server.crt
+          ClientTLSCert: ../organizations/ordererOrganizations/pi.com/orderers/orderer.pi.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/pi.com/orderers/orderer.pi.com/tls/server.crt
+        - Host: orderer2.pi.com
+          Port: 6050
+          ClientTLSCert: ../organizations/ordererOrganizations/pi.com/orderers/orderer2.pi.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/pi.com/orderers/orderer2.pi.com/tls/server.crt
+        - Host: orderer3.pi.com
+          Port: 5050
+          ClientTLSCert: ../organizations/ordererOrganizations/pi.com/orderers/orderer3.pi.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/pi.com/orderers/orderer3.pi.com/tls/server.crt
 
         Options:
             TickInterval: 2500ms
@@ -280,7 +292,7 @@ Channel: &ChannelDefaults
 ################################################################################
 Profiles:
 
-    CertifApplicationGenesis:
+    piApplicationGenesis:
         <<: *ChannelDefaults
         Orderer:
             <<: *OrdererDefaults
